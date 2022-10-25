@@ -1,0 +1,16 @@
+# for composer
+composer.phar
+composer.lock
+/vendor/
+
+# for docker-compose
+/.env
+
+# for phpunit
+.phpunit.result.cache
+
+# keep directory
+!.gitkeep
+
+# other
+/.vscode
