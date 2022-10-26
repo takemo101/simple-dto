@@ -7,7 +7,6 @@ use Takemo101\SimpleDTO\Attributes\Getter;
 use Takemo101\SimpleDTO\Attributes\Ignore;
 use Takemo101\SimpleDTO\Attributes\Rename;
 use Takemo101\SimpleDTO\Traits\HasSimpleDTO;
-use Takemo101\SimpleDTO\Traits\MissingGetterMethodException;
 
 /**
  * HasSimpleDTO trait test
