@@ -12,7 +12,7 @@ Execute the following composer command.
 ```
 composer require takemo101/simple-dto
 ```
-## How to use
+## Basic usage
 Please use as follows
 
 ```php
@@ -63,5 +63,40 @@ echo $dto->var; // bar
 // Convert to array
 var_dump($dto->toArray()); // ['a' => 'a', 'bb' => 'b', 'foo' => 'foo', 'var' => 'bar']
 ```
+
+## How to add functionality to convert DTO to array
+```php
+use Takemo101\SimpleDTO\SimpleDTOFacade;
+
+// A class that implements the ToArrayTransformer interface can be given as an argument.
+// If no arguments are given, the default implementation will be set.
+SimpleDTOFacade::setup();
+
+class FirstDTO
+{
+    use HasSimpleDTO;
+
+    public function __construct(
+        public SecondDTO $second,
+    ) {
+        //
+    }
+}
+
+class SecondDTO
+{
+    use HasSimpleDTO;
+
+    public function __construct(
+        public string $text,
+    ) {
+        //
+    }
+}
+
+$dto = new FirstDTO(new SecondDTO('text'));
+
+// DTO is arrayed by default ToArrayTransformer.
+var_dump($dto->toArray()); // ['second' => ['text' => 'text']]
 
 ```
