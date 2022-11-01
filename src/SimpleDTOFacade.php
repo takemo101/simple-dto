@@ -8,6 +8,11 @@ namespace Takemo101\SimpleDTO;
 final class SimpleDTOFacade
 {
     /**
+     * @var ToArrayTransformer[]
+     */
+    private static array $transformers = [];
+
+    /**
      * @var GetterMethodFinder
      */
     private readonly GetterMethodFinder $finder;
@@ -53,9 +58,42 @@ final class SimpleDTOFacade
 
         $methodValues = $this->finder->toArray();
 
-        return array_merge(
-            $methodValues,
-            $propertyValues,
-        );
+        /** @var array<string,mixed> */
+        $keyValues = [
+            ...$propertyValues,
+            ...$methodValues,
+        ];
+
+        return $this->transform($keyValues);
+    }
+
+    /**
+     * transform by array
+     *
+     * @param array<string,mixed> $keyValues
+     * @return array<string,mixed>
+     */
+    private function transform(array $keyValues): mixed
+    {
+        $result = $keyValues;
+
+        foreach (self::$transformers as $transformer) {
+            $result = $transformer->transform($result);
+        }
+
+        return $result;
+    }
+
+    /**
+     * setup transformer
+     *
+     * @param ToArrayTransformer ...$transformers
+     * @return void
+     */
+    public static function setup(ToArrayTransformer ...$transformers): void
+    {
+        self::$transformers = count($transformers) ?
+            $transformers :
+            [new ToArraySimpleTransformer()];
     }
 }
