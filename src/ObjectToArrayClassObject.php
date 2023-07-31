@@ -11,7 +11,7 @@ use ReflectionProperty;
 final class ObjectToArrayClassObject
 {
     /**
-     * @var ReflectionClass
+     * @var ReflectionClass<object>
      */
     private readonly ReflectionClass $class;
 
@@ -27,8 +27,8 @@ final class ObjectToArrayClassObject
     }
 
     /**
+     * Create an array of ObjectToArrayPropertyValue from object property data
      *
-     * @param boolean $isNeedToArrayEffect
      * @return ObjectToArrayPropertyValue[]
      */
     public function createPropertyValues(): array
@@ -51,9 +51,8 @@ final class ObjectToArrayClassObject
     }
 
     /**
+     * Create an array of ObjectToArrayMethodValue from the object's method data
      *
-     *
-     * @param boolean $isNeedToArrayEffect
      * @return ObjectToArrayMethodValue[]
      */
     public function createGetterMethodValues(): array

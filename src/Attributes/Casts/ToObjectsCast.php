@@ -10,7 +10,7 @@ use Takemo101\SimpleDTO\Contracts\ValueCastable;
 /**
  * Attribute that casts an object array of a class that implements Objectable
  *
- * @extends ValueCastable<array<integer,array<string,mixed>>,ToObjectable[]>
+ * @implements ValueCastable<array<integer,array<string,mixed>>,ToObjectable[]>
  */
 #[Attribute(Attribute::TARGET_PROPERTY | Attribute::TARGET_PARAMETER)]
 final class ToObjectsCast implements ValueCastable
@@ -37,7 +37,7 @@ final class ToObjectsCast implements ValueCastable
     /**
      * Convert from array values ​​to object property values
      *
-     * @param array<integer,array<string,mixed> $value
+     * @param array<integer,array<string,mixed>> $value
      * @return ToObjectable[]
      */
     public function castToObject($value)
@@ -61,10 +61,13 @@ final class ToObjectsCast implements ValueCastable
      * Convert from object property value to array value
      *
      * @param ToObjectable[] $value
-     * @return ToObjectable[]
+     * @return array<integer,array<string,mixed>>
      */
     public function castToArray($value)
     {
-        return $value;
+        /** @var array<integer,array<string,mixed>> */
+        $result = $value;
+
+        return $result;
     }
 }

@@ -11,7 +11,7 @@ use Takemo101\SimpleDTO\Contracts\ValueCastable;
  * Attribute casting Enum
  *
  * @template TEnum of BackedEnum
- * @extends ValueCastable<string|integer|null,TEnum|null>
+ * @implements ValueCastable<string|integer|null,TEnum|null>
  */
 #[Attribute(Attribute::TARGET_PROPERTY | Attribute::TARGET_PARAMETER)]
 final class EnumCast implements ValueCastable

@@ -42,7 +42,7 @@ final class ObjectToArrayMethodValue
     /**
      * get method name
      *
-     * @return string|null
+     * @return string
      */
     public function getMethodName(): string
     {

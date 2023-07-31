@@ -19,6 +19,13 @@ final class ValueConverter
         //
     }
 
+    /**
+     * Convert values ​​to be arrayed
+     *
+     * @param mixed $value
+     * @param ValueCastable<mixed,mixed> ...$castables
+     * @return mixed
+     */
     public function convert(
         mixed $value,
         ValueCastable ...$castables,

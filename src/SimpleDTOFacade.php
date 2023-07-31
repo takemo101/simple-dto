@@ -84,11 +84,16 @@ final class SimpleDTOFacade
      */
     private static function transformers(): DTOTransformers
     {
-        if (is_null(self::$transformers)) {
+        $transformers = self::$transformers;
+
+        if (is_null($transformers)) {
             self::setDefaultTransformers();
+
+            /** @var DTOTransformers */
+            $transformers = self::$transformers;
         }
 
-        return self::$transformers;
+        return $transformers;
     }
 
     /**
@@ -133,11 +138,16 @@ final class SimpleDTOFacade
      */
     public static function converter(): ValueConverter
     {
-        if (is_null(self::$converter)) {
+        $converter = self::$converter;
+
+        if (is_null($converter)) {
             self::setDefaultFilters();
+
+            /** @var ValueConverter */
+            $converter = self::$converter;
         }
 
-        return self::$converter;
+        return $converter;
     }
 
     /**

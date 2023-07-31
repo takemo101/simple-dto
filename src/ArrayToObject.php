@@ -107,7 +107,7 @@ final class ArrayToObject
 
         if (count($attributes)) {
             foreach ($attributes as $castable) {
-                /** @var ValueCastable */
+                /** @var ValueCastable<mixed,mixed> */
                 $castable = $castable->newInstance();
 
                 $result = $castable->castToObject($result);
@@ -196,7 +196,7 @@ final class ArrayToObject
     /**
      * Generate an instance that implements ToObjectable from the class name
      *
-     * @param class-string<ToObjectable> $class
+     * @param class-string<ToObjectable>|string $class
      * @param array<string,mixed> $data
      * @return ToObjectable|null
      */
@@ -204,14 +204,15 @@ final class ArrayToObject
         string $class,
         array $data = [],
     ): ?ToObjectable {
-
-        /** @var ToObjectable|null */
-        $object = is_subclass_of(
+        if (is_subclass_of(
             $class,
             ToObjectable::class,
-        )
-            ? ($class)::__fromArray($data)
-            : null;
+        )) {
+            /** @var ToObjectable */
+            $object = ($class)::__fromArray($data);
+        } else {
+            $object = null;
+        }
 
         return $object;
     }

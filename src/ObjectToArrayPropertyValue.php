@@ -79,7 +79,7 @@ final class ObjectToArrayPropertyValue
     /**
      * get castables
      *
-     * @return ValueCastable[]
+     * @return ValueCastable<mixed,mixed>[]
      */
     private function getPropertyCastables(): array
     {
@@ -92,7 +92,7 @@ final class ObjectToArrayPropertyValue
         );
 
         foreach ($attributes as $attribute) {
-            /** @var ValueCastable */
+            /** @var ValueCastable<mixed,mixed> */
             $castable = $attribute->newInstance();
 
             $result[] = $castable;
