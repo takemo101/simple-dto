@@ -50,7 +50,7 @@ class ValueFilterTest extends TestCase
             $expected['number'] !== $object->__toArray()['number'],
         );
 
-        SimpleDTOFacade::setDefaultFilters();
+        SimpleDTOFacade::setup();
     }
 
     /**
@@ -73,7 +73,7 @@ class ValueFilterTest extends TestCase
             $object->__toArray()['dto'],
         );
 
-        SimpleDTOFacade::setDefaultFilters();
+        SimpleDTOFacade::setup();
 
         $this->assertNotInstanceOf(
             ArrayObject::class,

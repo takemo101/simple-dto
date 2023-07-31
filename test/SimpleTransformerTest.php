@@ -6,6 +6,7 @@ use PHPUnit\Framework\TestCase;
 use Takemo101\SimpleDTO\Attributes\Getter;
 use Takemo101\SimpleDTO\SimpleDTOFacade;
 use Takemo101\SimpleDTO\Traits\HasSimpleDTO;
+use Takemo101\SimpleDTO\Transformers\DTOTransformers;
 use Takemo101\SimpleDTO\Transformers\SimpleTransformer;
 
 /**
@@ -61,7 +62,9 @@ class SimpleTransformerTest extends TestCase
      */
     public function toArray__NG()
     {
-        SimpleDTOFacade::setEmptyTransformers();
+        SimpleDTOFacade::setup(
+            DTOTransformers::empty(),
+        );
 
         $object = new class(
             'a',
@@ -98,7 +101,7 @@ class SimpleTransformerTest extends TestCase
         $this->assertEquals('a', $array['a']);
         $this->assertEquals('b', $array['object']->b);
 
-        SimpleDTOFacade::setDefaultTransformers();
+        SimpleDTOFacade::setup();
     }
 
     /**
@@ -106,7 +109,7 @@ class SimpleTransformerTest extends TestCase
      */
     public function toArray__OK()
     {
-        SimpleDTOFacade::setDefaultTransformers();
+        SimpleDTOFacade::setup();
 
         $object = new class(
             'a',

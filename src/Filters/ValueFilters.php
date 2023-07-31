@@ -2,7 +2,6 @@
 
 namespace Takemo101\SimpleDTO\Filters;
 
-use Takemo101\SimpleDTO\Contracts\DTOTransformer;
 use Takemo101\SimpleDTO\Contracts\ValueFilterable;
 
 /**

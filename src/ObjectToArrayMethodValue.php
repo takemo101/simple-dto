@@ -4,6 +4,7 @@ namespace Takemo101\SimpleDTO;
 
 use ReflectionMethod;
 use Takemo101\SimpleDTO\Attributes\Getter;
+use Takemo101\SimpleDTO\Attributes\Ignore;
 use Takemo101\SimpleDTO\Contracts\ToArrayable;
 
 /**
@@ -37,6 +38,21 @@ final class ObjectToArrayMethodValue
     public function isGetterMethod(): bool
     {
         return !empty($this->method->getAttributes(Getter::class));
+    }
+
+    /**
+     * is ignores method
+     *
+     * @return boolean
+     */
+    public function isIgnoreMethod(): bool
+    {
+        // Ignore static properties
+        if ($this->method->isStatic()) {
+            return true;
+        }
+
+        return count($this->method->getAttributes(Ignore::class)) > 0;
     }
 
     /**
