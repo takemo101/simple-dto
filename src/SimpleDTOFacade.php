@@ -92,7 +92,7 @@ final class SimpleDTOFacade
     /**
      * Set transformers
      *
-     * @param ValueFilterable ...$filters
+     * @param DTOTransformer ...$transformers
      * @return void
      */
     public static function setTransformers(
