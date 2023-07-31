@@ -2,98 +2,163 @@
 
 namespace Takemo101\SimpleDTO;
 
+use Takemo101\SimpleDTO\Contracts\DTOTransformer;
+use Takemo101\SimpleDTO\Contracts\ValueFilterable;
+use Takemo101\SimpleDTO\Filters\ValueFilters;
+use Takemo101\SimpleDTO\Transformers\DTOTransformers;
+use Takemo101\SimpleDTO\Transformers\SimpleTransformer;
+
 /**
  * simple dto facade
  */
 final class SimpleDTOFacade
 {
     /**
-     * @var ToArrayTransformer[]
+     * @var DTOTransformers
      */
-    private static array $transformers = [];
+    private static ?DTOTransformers $transformers = null;
 
     /**
-     * @var GetterMethodFinder
+     * @var ValueConverter
      */
-    private readonly GetterMethodFinder $finder;
+    private static ?ValueConverter $converter = null;
 
     /**
-     * @var ObjectToArrayAdapter
+     * private constructor
      */
-    private readonly ObjectToArrayAdapter $adapter;
-
-    /**
-     * constructor
-     *
-     * @param object $object
-     * @param string[] $ignores
-     */
-    public function __construct(
-        object $object,
-        array $ignores = [],
-    ) {
-        $this->finder = new GetterMethodFinder($object);
-        $this->adapter = new ObjectToArrayAdapter($object, $ignores);
-    }
-
-    /**
-     * find getter method output
-     *
-     * @param string $method
-     * @return MethodOutput|null
-     */
-    public function findMethod(string $method): ?MethodOutput
+    private function __construct()
     {
-        return $this->finder->find($method);
+        //
     }
 
     /**
-     * object to property and method array
+     * From DTO to array data
      *
+     * @param object $dto
      * @return array<string,mixed>
      */
-    public function toArray(): array
-    {
-        $propertyValues = $this->adapter->toArray();
+    public static function fromDTOToArray(
+        object $dto,
+    ): array {
+        $adapter = $dto instanceof DTOAdapter
+            ? $dto
+            : new DTOAdapter($dto);
 
-        $methodValues = $this->finder->toArray();
-
-        /** @var array<string,mixed> */
-        $keyValues = [
-            ...$propertyValues,
-            ...$methodValues,
-        ];
-
-        return $this->transform($keyValues);
+        return self::transformers()->transformToArray(
+            $adapter->toArray(self::converter()),
+        );
     }
 
     /**
-     * transform by array
+     * From array data and class name to DTO
      *
-     * @param array<string,mixed> $keyValues
-     * @return array<string,mixed>
+     * @param class-string $class
+     * @param array<string,mixed> $data
+     * @return object
      */
-    private function transform(array $keyValues): mixed
-    {
-        $result = $keyValues;
-
-        foreach (self::$transformers as $transformer) {
-            $result = $transformer->transform($result);
-        }
-
-        return $result;
+    public static function fromArrayToDTO(
+        string $class,
+        array $data,
+    ): object {
+        return ArrayToObject::fromArrayToObject(
+            $class,
+            self::transformers()->transformToObject($data),
+        );
     }
 
     /**
-     * setup transformer
+     * Set up the required data
      *
-     * @param ToArrayTransformer ...$transformers
      * @return void
      */
-    public static function setup(ToArrayTransformer ...$transformers): void
+    public static function setup(): void
     {
-        self::$transformers = count($transformers) ?
-            $transformers :
-            [new ToArraySimpleTransformer()];
+        self::setDefaultTransformers();
+        self::setDefaultFilters();
+    }
+
+    /**
+     * get transformers instance
+     *
+     * @return DTOTransformers
+     */
+    private static function transformers(): DTOTransformers
+    {
+        if (is_null(self::$transformers)) {
+            self::setDefaultTransformers();
+        }
+
+        return self::$transformers;
+    }
+
+    /**
+     * set transformer
+     *
+     * @param DTOTransformer ...$transformers
+     * @return void
+     */
+    public static function setTransformers(DTOTransformer ...$transformers): void
+    {
+        self::$transformers = new DTOTransformers(
+            ...$transformers,
+        );
+    }
+
+    /**
+     * set default transformer
+     *
+     * @return void
+     */
+    public static function setDefaultTransformers(): void
+    {
+        self::$transformers = new DTOTransformers(
+            new SimpleTransformer(),
+        );
+    }
+
+    /**
+     * set empty transformer
+     *
+     * @return void
+     */
+    public static function setEmptyTransformers(): void
+    {
+        self::$transformers = DTOTransformers::empty();
+    }
+
+    /**
+     * get value converter instance
+     *
+     * @return ValueConverter
+     */
+    public static function converter(): ValueConverter
+    {
+        if (is_null(self::$converter)) {
+            self::setDefaultFilters();
+        }
+
+        return self::$converter;
+    }
+
+    /**
+     * set value filters
+     *
+     * @return void
+     */
+    public static function setFilters(ValueFilterable ...$filters): void
+    {
+        self::$converter = new ValueConverter(
+            new ValueFilters(...$filters),
+        );
+    }
+
+    /**
+     * set default filters
+     *
+     * @return void
+     */
+    public static function setDefaultFilters(): void
+    {
+        self::$converter = ValueConverter::empty();
     }
 }

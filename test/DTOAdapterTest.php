@@ -6,12 +6,13 @@ use PHPUnit\Framework\TestCase;
 use Takemo101\SimpleDTO\Attributes\Getter;
 use Takemo101\SimpleDTO\Attributes\Ignore;
 use Takemo101\SimpleDTO\Attributes\Rename;
-use Takemo101\SimpleDTO\SimpleDTOFacade;
+use Takemo101\SimpleDTO\DTOAdapter;
+use Takemo101\SimpleDTO\ValueConverter;
 
 /**
- * SimpleDTOFacade class test
+ * DTOAdapter class test
  */
-class SimpleDTOFacadeTest extends TestCase
+class DTOAdapterTest extends TestCase
 {
     /**
      * @test
@@ -40,11 +41,11 @@ class SimpleDTOFacadeTest extends TestCase
             }
         };
 
-        $facade = new SimpleDTOFacade($object);
+        $adapter = new DTOAdapter($object);
 
-        $this->assertEquals('foo', $facade->findMethod('foo')->output());
-        $this->assertNull($facade->findMethod('bar'));
-        $this->assertNull($facade->findMethod('a'));
+        $this->assertEquals('foo', $adapter->findMethodOutput('foo')->output());
+        $this->assertNull($adapter->findMethodOutput('bar'));
+        $this->assertNull($adapter->findMethodOutput('a'));
     }
 
     /**
@@ -80,8 +81,8 @@ class SimpleDTOFacadeTest extends TestCase
             }
         };
 
-        $facade = new SimpleDTOFacade($object);
-        $array = $facade->toArray();
+        $adapter = new DTOAdapter($object);
+        $array = $adapter->toArray(ValueConverter::empty());
 
         $this->assertEquals('a', $array['怪力']);
         $this->assertEquals('foo', $array['foo']);

@@ -5,13 +5,13 @@ namespace Test;
 use PHPUnit\Framework\TestCase;
 use Takemo101\SimpleDTO\Attributes\Getter;
 use Takemo101\SimpleDTO\SimpleDTOFacade;
-use Takemo101\SimpleDTO\ToArraySimpleTransformer;
 use Takemo101\SimpleDTO\Traits\HasSimpleDTO;
+use Takemo101\SimpleDTO\Transformers\SimpleTransformer;
 
 /**
- * ToArraySimpleTransformer class test
+ * SimpleTransformerTest class test
  */
-class ToArraySimpleTransformerTest extends TestCase
+class SimpleTransformerTest extends TestCase
 {
     /**
      * @test
@@ -48,9 +48,9 @@ class ToArraySimpleTransformerTest extends TestCase
             }
         };
 
-        $transformer = new ToArraySimpleTransformer();
+        $transformer = new SimpleTransformer();
 
-        $array = $transformer->transform($object->toArray());
+        $array = $transformer->transformToArray($object->toArray());
 
         $this->assertEquals('a', $array['a']);
         $this->assertEquals('b', $array['object']['b']);
@@ -61,6 +61,8 @@ class ToArraySimpleTransformerTest extends TestCase
      */
     public function toArray__NG()
     {
+        SimpleDTOFacade::setEmptyTransformers();
+
         $object = new class(
             'a',
         )
@@ -95,6 +97,8 @@ class ToArraySimpleTransformerTest extends TestCase
 
         $this->assertEquals('a', $array['a']);
         $this->assertEquals('b', $array['object']->b);
+
+        SimpleDTOFacade::setDefaultTransformers();
     }
 
     /**
@@ -102,7 +106,7 @@ class ToArraySimpleTransformerTest extends TestCase
      */
     public function toArray__OK()
     {
-        SimpleDTOFacade::setup();
+        SimpleDTOFacade::setDefaultTransformers();
 
         $object = new class(
             'a',

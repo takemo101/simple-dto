@@ -2,11 +2,6 @@
 
 namespace Takemo101\SimpleDTO;
 
-use ReflectionClass;
-use ReflectionProperty;
-use Takemo101\SimpleDTO\Attributes\Rename;
-use Takemo101\SimpleDTO\Attributes\Ignore;
-
 /**
  * convert from object to property array
  */
@@ -15,12 +10,10 @@ final class ObjectToArrayAdapter
     /**
      * constructor
      *
-     * @param object $object
-     * @param string[] $ignores
+     * @param ObjectToArrayClassObject $classObject
      */
     public function __construct(
-        private readonly object $object,
-        private readonly array $ignores = [],
+        private readonly ObjectToArrayClassObject $classObject,
     ) {
         //
     }
@@ -28,64 +21,29 @@ final class ObjectToArrayAdapter
     /**
      * object to property array
      *
+     * @param ValueConverter $converter
      * @return array<string,mixed>
      */
-    public function toArray(): array
+    public function toArray(ValueConverter $converter): array
     {
-        $class = new ReflectionClass($this->object);
+        return $this->mapWithKey(
+            $this->classObject->createPropertyValues(),
+            function (ObjectToArrayPropertyValue $propertyValue) use (
+                $converter,
+            ) {
+                $name = $propertyValue->getPropertyName();
 
-        /**
-         * @var ReflectionProperty[]
-         */
-        $reflections = array_filter(
-            $class->getProperties(
-                ReflectionProperty::IS_PUBLIC,
-            ),
-            fn (ReflectionProperty $reflection) => !$this->isIgnorePropertyByReflection($reflection),
-        );
+                if ($propertyValue->isIgnoreProperty()) {
+                    return null;
+                }
 
-        return $this->arrayMapWithKey(
-            $reflections,
-            function (ReflectionProperty $reflection) {
-                $name = $this->getPropertyNameByReflection($reflection);
-
-                return in_array($name, $this->ignores) ?
-                    null :
-                    [$name => $reflection->getValue($this->object)];
+                return [
+                    $name => $propertyValue->getPropertyValue(
+                        $converter,
+                    )
+                ];
             },
         );
-    }
-
-    /**
-     * is ignores property by reflection
-     *
-     * @param ReflectionProperty $reflection
-     * @return boolean
-     */
-    private function isIgnorePropertyByReflection(ReflectionProperty $reflection): bool
-    {
-        return count($reflection->getAttributes(Ignore::class)) > 0;
-    }
-
-    /**
-     * get property name by reflection
-     *
-     * @param ReflectionProperty $reflection
-     * @return string
-     */
-    private function getPropertyNameByReflection(ReflectionProperty $reflection): string
-    {
-        $attributes = $reflection->getAttributes(Rename::class);
-        foreach ($attributes as $attribute) {
-            /**
-             * @var Rename
-             */
-            $rename = $attribute->newInstance();
-
-            return $rename->name();
-        }
-
-        return $reflection->getName();
     }
 
     /**
@@ -95,7 +53,7 @@ final class ObjectToArrayAdapter
      * @param callable $callback
      * @return array<string,mixed>
      */
-    private function arrayMapWithKey(array $data, callable $callback): array
+    private function mapWithKey(array $data, callable $callback): array
     {
         $result = [];
 
@@ -114,13 +72,13 @@ final class ObjectToArrayAdapter
      * from object to property array
      *
      * @param object $object
-     * @param string[] $ignores
-     * @return array<string,mixed>
+     * @return self
      */
-    public static function fromObjectToArray(
+    public static function fromObject(
         object $object,
-        array $ignores = [],
-    ): array {
-        return (new self($object, $ignores))->toArray();
+    ): self {
+        return new self(
+            new ObjectToArrayClassObject($object),
+        );
     }
 }

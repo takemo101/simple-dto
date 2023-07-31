@@ -2,105 +2,82 @@
 
 namespace Takemo101\SimpleDTO;
 
-use ReflectionClass;
-use ReflectionMethod;
 use Takemo101\SimpleDTO\Attributes\Getter;
 
 /**
- * find the getter method
+ * find the method
  */
 final class GetterMethodFinder
 {
     /**
-     * @var array<string,ReflectionMethod>|null
+     * @var array<string,ObjectToArrayMethodValue>
      */
-    private ?array $methods = null;
+    private readonly array $methodValues;
 
     /**
      * constructor
      *
-     * @param object $object
+     * @param ObjectToArrayMethodValue ...$methodValues
      */
     public function __construct(
-        private readonly object $object,
+        ObjectToArrayMethodValue ...$methodValues,
     ) {
-        //
+        $_methodValues = [];
+
+        foreach ($methodValues as $methodValue) {
+            $_methodValues[$methodValue->getMethodName()] = $methodValue;
+        }
+
+        $this->methodValues = $_methodValues;
     }
 
     /**
      * find getter method output
      *
-     * @param string $method
+     * @param string $name
      * @return MethodOutput|null
      */
-    public function find(string $method): ?MethodOutput
+    public function find(string $name): ?MethodOutput
     {
-        $methods = $this->getObjectReflectionMethods();
+        if (!array_key_exists($name, $this->methodValues)) {
+            return null;
+        }
 
-        return array_key_exists($method, $methods) ?
-            MethodOutput::from($this->object, $methods[$method]) :
-            null;
+        $methodValue = $this->methodValues[$name];
+
+        return $methodValue->output;
     }
 
     /**
      * method output to array
      *
+     * @param ValueConverter $converter
      * @return array<string,mixed>
      */
-    public function toArray(): array
+    public function toArray(ValueConverter $converter): array
     {
         /** @var array<string,mixed> */
         $result = [];
 
-        foreach ($this->getObjectReflectionMethods() as $name => $method) {
-            $result[$name] = MethodOutput::from($this->object, $method)->output();
+        foreach ($this->methodValues as $name => $methodValue) {
+            $result[$name] = $methodValue->getMethodValue(
+                $converter,
+            );
         }
 
         return $result;
     }
 
     /**
-     * get object reflection methods
+     * Undocumented function
      *
-     * @return array<string,ReflectionMethod>
+     * @param object $object
+     * @return self
      */
-    private function getObjectReflectionMethods(): array
+    public static function fromObject(object $object): self
     {
-        if (is_null($this->methods)) {
-            /** @var array<string,ReflectionMethod> */
-            $methods = [];
+        $classObject = new ObjectToArrayClassObject($object);
 
-            $reflections = (new ReflectionClass($this->object))->getMethods();
-
-            foreach ($reflections as $reflection) {
-                if ($name = $this->getMethodNameByReflection($reflection)) {
-                    $methods[$name] = $reflection;
-                }
-            }
-
-            $this->methods = $methods;
-        }
-
-        return $this->methods;
-    }
-
-    /**
-     * get getter method name
-     *
-     * @param ReflectionMethod $reflection
-     * @return string|null
-     */
-    private function getMethodNameByReflection(ReflectionMethod $reflection): ?string
-    {
-        $attributes = $reflection->getAttributes(Getter::class);
-        foreach ($attributes as $attribute) {
-            /**
-             * @var Getter
-             */
-            $name = $attribute->newInstance();
-            return $name->needRename() ? $name->name() : $reflection->getName();
-        }
-
-        return null;
+        return new self(...$classObject->createGetterMethodValues());
     }
 }
