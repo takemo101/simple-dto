@@ -5,6 +5,7 @@ namespace Test;
 use PHPUnit\Framework\TestCase;
 use Takemo101\SimpleDTO\Attributes\Getter;
 use Takemo101\SimpleDTO\GetterMethodFinder;
+use Takemo101\SimpleDTO\ValueConverter;
 
 /**
  * GetterMethodFinder class test
@@ -42,7 +43,7 @@ class GetterMethodFinderTest extends TestCase
             }
         };
 
-        $finder = new GetterMethodFinder($object);
+        $finder = GetterMethodFinder::fromObject($object);
 
         $this->assertEquals('foo', $finder->find('foo')->output());
         $this->assertEquals('bar', $finder->find('ber')->output());
@@ -75,9 +76,9 @@ class GetterMethodFinderTest extends TestCase
             }
         };
 
-        $finder = new GetterMethodFinder($object);
+        $finder = GetterMethodFinder::fromObject($object);
 
-        $array = $finder->toArray();
+        $array = $finder->toArray(ValueConverter::empty());
 
         $this->assertEquals('foo', $array['foo']);
         $this->assertEquals('bal', $array['bal']);

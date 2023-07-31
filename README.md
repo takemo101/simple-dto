@@ -68,7 +68,7 @@ var_dump($dto->toArray()); // ['a' => 'a', 'bb' => 'b', 'foo' => 'foo', 'var' =>
 ```php
 use Takemo101\SimpleDTO\SimpleDTOFacade;
 
-// A class that implements the ToArrayTransformer interface can be given as an argument.
+// A class that implements the DTOTransformer interface can be given as an argument.
 // If no arguments are given, the default implementation will be set.
 SimpleDTOFacade::setup();
 
@@ -96,7 +96,20 @@ class SecondDTO
 
 $dto = new FirstDTO(new SecondDTO('text'));
 
-// DTO is arrayed by default ToArrayTransformer.
+// DTO is arrayed by default DTOTransformer.
 var_dump($dto->toArray()); // ['second' => ['text' => 'text']]
+
+```
+
+
+## How to reconstruct a DTO from an array
+
+```php
+use Takemo101\SimpleDTO\SimpleDTOFacade;
+
+// omit...
+
+// Reconstructs the DTO from the array, so it can be both arrayed and objectified
+$dto = FirstDTO::fromArray(['second' => ['text' => 'text']]);
 
 ```

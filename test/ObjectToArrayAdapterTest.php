@@ -6,6 +6,7 @@ use PHPUnit\Framework\TestCase;
 use Takemo101\SimpleDTO\Attributes\Ignore;
 use Takemo101\SimpleDTO\Attributes\Rename;
 use Takemo101\SimpleDTO\ObjectToArrayAdapter;
+use Takemo101\SimpleDTO\ValueConverter;
 
 /**
  * ObjectToArrayAdapter class test
@@ -36,8 +37,8 @@ class ObjectToArrayAdapterTest extends TestCase
             }
         };
 
-        $adapter = new ObjectToArrayAdapter($object);
-        $array = $adapter->toArray();
+        $adapter = ObjectToArrayAdapter::fromObject($object);
+        $array = $adapter->toArray(ValueConverter::empty());
 
         $this->assertEquals('a', $array['a']);
         $this->assertEquals('b', $array['怪力']);
@@ -69,7 +70,8 @@ class ObjectToArrayAdapterTest extends TestCase
             }
         };
 
-        $array = ObjectToArrayAdapter::fromObjectToArray($object);
+        $array = ObjectToArrayAdapter::fromObject($object)
+            ->toArray(ValueConverter::empty());
 
         $this->assertEquals('a', $array['a']);
         $this->assertEquals('b', $array['Bbb']);

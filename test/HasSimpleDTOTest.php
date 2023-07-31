@@ -42,7 +42,7 @@ class HasSimpleDTOTest extends TestCase
             'd',
         );
 
-        $array = $dto->toArray();
+        $array = $dto->__toArray();
 
         $this->assertEquals('a', $array['a']);
         $this->assertEquals('b', $array['怪力']);
