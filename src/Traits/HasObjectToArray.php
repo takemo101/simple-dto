@@ -31,16 +31,6 @@ trait HasObjectToArray
     }
 
     /**
-     * get value converter
-     *
-     * @return ValueConverter|null
-     */
-    protected function __converter(): ?ValueConverter
-    {
-        return null;
-    }
-
-    /**
      * get the output result of the getter method as the value of the property
      *
      * @param string $key
