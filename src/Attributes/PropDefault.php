@@ -5,8 +5,7 @@ namespace Takemo101\SimpleDTO\Attributes;
 use Attribute;
 
 /**
- * 配列からオブジェクトに変換する場合の
- * プロパティのデフォルト値を設定できる
+ * You can set default values ​​for properties when converting from an array to an object
  */
 #[Attribute(Attribute::TARGET_PROPERTY | Attribute::TARGET_PARAMETER)]
 final class PropDefault
