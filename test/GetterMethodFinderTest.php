@@ -4,6 +4,7 @@ namespace Test;
 
 use PHPUnit\Framework\TestCase;
 use Takemo101\SimpleDTO\Attributes\Getter;
+use Takemo101\SimpleDTO\Attributes\Ignore;
 use Takemo101\SimpleDTO\GetterMethodFinder;
 use Takemo101\SimpleDTO\ValueConverter;
 
@@ -83,5 +84,36 @@ class GetterMethodFinderTest extends TestCase
         $this->assertEquals('foo', $array['foo']);
         $this->assertEquals('bal', $array['bal']);
         $this->assertFalse(isset($array['bee']));
+    }
+
+    /**
+     * @test
+     */
+    public function ignoreMethod__OK()
+    {
+        $object = new class
+        {
+            #[Getter]
+            #[Ignore]
+            public function foo(): string
+            {
+                return 'foo';
+            }
+
+            #[Getter('bal')]
+            public function bar(string $bal = 'bal'): string
+            {
+                return $bal;
+            }
+        };
+
+        $finder = GetterMethodFinder::fromObject($object);
+
+        $this->assertNotNull($finder->find('foo'));
+
+        $array = $finder->toArray(ValueConverter::empty());
+
+        $this->assertArrayNotHasKey('foo', $array);
+        $this->assertEquals('bal', $array['bal']);
     }
 }

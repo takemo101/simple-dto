@@ -60,9 +60,11 @@ final class GetterMethodFinder
         $result = [];
 
         foreach ($this->methodValues as $name => $methodValue) {
-            $result[$name] = $methodValue->getMethodValue(
-                $converter,
-            );
+            if (!$methodValue->isIgnoreMethod()) {
+                $result[$name] = $methodValue->getMethodValue(
+                    $converter,
+                );
+            }
         }
 
         return $result;
