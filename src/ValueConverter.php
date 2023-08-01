@@ -4,19 +4,25 @@ namespace Takemo101\SimpleDTO;
 
 use Takemo101\SimpleDTO\Contracts\ToArrayable;
 use Takemo101\SimpleDTO\Contracts\ValueCastable;
+use Takemo101\SimpleDTO\Contracts\ValueFilterable;
 use Takemo101\SimpleDTO\Filters\ValueFilters;
 
 final class ValueConverter
 {
     /**
+     * @var ValueFilters
+     */
+    private readonly ValueFilters $filters;
+
+    /**
      * constructor
      *
-     * @param ValueFilters $filters
+     * @param ValueFilterable ...$filters
      */
     public function __construct(
-        private readonly ValueFilters $filters,
+        ValueFilterable ...$filters,
     ) {
-        //
+        $this->filters = new ValueFilters(...$filters);
     }
 
     /**
@@ -64,8 +70,6 @@ final class ValueConverter
      */
     public static function empty(): self
     {
-        return new self(
-            ValueFilters::empty(),
-        );
+        return new self();
     }
 }
