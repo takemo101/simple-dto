@@ -91,4 +91,25 @@ final class SimpleDTO
             ),
         );
     }
+
+    /**
+     * Create instances from the required Transformers and Filters
+     *
+     * @param DTOTransformer[] $transformers
+     * @param ValueFilterable[] $filters
+     * @return self
+     */
+    public static function fromTransformersAndFilters(
+        array $transformers = [],
+        array $filters = [],
+    ): self {
+        return new self(
+            new DTOTransformers(
+                ...$transformers,
+            ),
+            new ValueConverter(
+                ...$filters,
+            ),
+        );
+    }
 }

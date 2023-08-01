@@ -73,19 +73,17 @@ final class SimpleDTOFacade
     /**
      * Set up the required data
      *
-     * @param DTOTransformers|null $transformers
-     * @param ValueConverter|null $converter
+     * @param DTOTransformer[] $transformers
+     * @param ValueFilterable[] $filters
      * @return void
      */
     public static function setup(
-        ?DTOTransformers $transformers = null,
-        ?ValueConverter $converter = null,
+        array $transformers = [new SimpleTransformer()],
+        array $filters = [],
     ): void {
-        self::$instance = new SimpleDTO(
-            $transformers ?? new DTOTransformers(
-                new SimpleTransformer(),
-            ),
-            $converter ?? ValueConverter::empty(),
+        self::$instance = SimpleDTO::fromTransformersAndFilters(
+            $transformers,
+            $filters,
         );
     }
 

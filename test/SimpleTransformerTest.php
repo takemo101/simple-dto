@@ -63,7 +63,7 @@ class SimpleTransformerTest extends TestCase
     public function toArray__NG()
     {
         SimpleDTOFacade::setup(
-            DTOTransformers::empty(),
+            [],
         );
 
         $object = new class(
